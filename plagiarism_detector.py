@@ -2,12 +2,13 @@ import tkinter as tk
 from tkinter import filedialog
 from difflib import SequenceMatcher
 
-def load_file(filename_entry, text_widget):
-    file_path = filedialog.askopenfilename()
+def load_file_or_display_contents(entry, text_widget):
+    file_path = entry.get()
+    if not file_path:
+        file_path = filedialog.askopenfilename()
     if file_path:
-        filename_entry.delete(0, tk.END)
-        filename_entry.insert(tk.END, file_path)
-
+        entry.delete(0, tk.END)
+        entry.insert(tk.END, file_path)
         with open(file_path, 'r') as file:
             text = file.read()
             text_widget.delete(1.0, tk.END)
@@ -17,7 +18,7 @@ def compare_text(text1, text2):
     d = SequenceMatcher(None, text1, text2)
     similarity_ratio = d.ratio()
     similarity_percentage = int(similarity_ratio * 100)
-
+    
     diff = list(d.get_opcodes())
     return similarity_percentage, diff
 
@@ -54,14 +55,14 @@ text_label2 = tk.Label(frame, text="Text 2:")
 text_label2.grid(row=0, column=2, padx=5, pady=5)
 text_textbox2 = tk.Text(frame, wrap=tk.WORD, width=40, height=10)
 text_textbox2.grid(row=0, column=3, padx=5, pady=5)
-load_button1 = tk.Button(frame, text="Load File 1", command=lambda: load_file(filename_entry1, text_textbox1))
+file_entry1 = tk.Entry(frame, width=50)
+file_entry1.grid(row=1, column=2, columnspan=2, padx=5, pady=5)
+load_button1 = tk.Button(frame, text="Load File 1", command=lambda: load_file_or_display_contents(file_entry1, text_textbox1))
 load_button1.grid(row=1, column=0, padx=5, pady=5, columnspan=2)
-filename_entry1 = tk.Entry(frame, width=50)
-filename_entry1.grid(row=1, column=2, columnspan=2, padx=5, pady=5)
-load_button2 = tk.Button(frame, text="Load File 2", command=lambda: load_file(filename_entry2, text_textbox2))
+file_entry2 = tk.Entry(frame, width=50)
+file_entry2.grid(row=2, column=2, columnspan=2, padx=5, pady=5)
+load_button2 = tk.Button(frame, text="Load File 2", command=lambda: load_file_or_display_contents(file_entry2, text_textbox2))
 load_button2.grid(row=2, column=0, padx=5, pady=5, columnspan=2)
-filename_entry2 = tk.Entry(frame, width=50)
-filename_entry2.grid(row=2, column=2, columnspan=2, padx=5, pady=5)
 compare_button = tk.Button(root, text="Compare", command=show_similarity)
 compare_button.pack(pady=5)
 
